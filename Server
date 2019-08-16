@@ -1,0 +1,87 @@
+#include "pch.h"
+#include <iostream>
+#pragma comment(lib, "WS2_32.lib")
+
+#include <winsock2.h> // стандартный виндовс сокет для подключения 
+#pragma warning(disable: 4996);
+using namespace std;
+
+SOCKET newConnection;
+
+SOCKET Connection[100];
+SOCKADDR_IN my_adres;
+int sizeofadres = sizeof(my_adres);
+int Counter = 0;
+int keks;
+char msg[256];
+char msg1[256];
+void recv_msg(int index) {
+	while (true) {
+		recv(Connection[index], msg, sizeof(msg), NULL);
+		keks = atoi(msg);
+		keks = keks + 5;
+		itoa(keks, msg, 10);
+		cout << keks << endl;
+		Sleep(1000);
+		itoa(keks, msg1, 10);
+		send(Connection[index], msg1, sizeof(msg1), NULL);
+		Sleep(1000);
+	}
+}
+
+int main() {
+
+	//Для того чтобы было много клиентов, то можно сделать так:
+
+
+	//WSAStartup
+	WSAData wsaData;
+	WORD DLLVersion = MAKEWORD(2, 1); // Версия библиотеки, которую мы подключаем в программе
+	//Цикл для проверки, загрузки данной библиотеки, если она не загрузится, выходит ошибка
+	if (WSAStartup(DLLVersion, &wsaData) != 0) {
+		cout << "Error no connect for library" << endl;
+		exit(1);
+
+	}
+
+
+
+	// SOCKADDR_IN преднозначена для хранения адреса (для интернет протоколов) 
+
+
+	my_adres.sin_addr.s_addr = inet_addr("178.213.240.13");
+	my_adres.sin_port = htons(27015);
+	my_adres.sin_family = AF_INET; //(выбирается семейство протоколов, для интернета AF_INET ) (Для IP4-AF_INET, Для IP6-AF_INET6, Для локальных сокетов AF_UNIX)
+
+
+
+	//Создается сокет, который говорит о том, что используется инет протокол и протокол устанавливающий соединение
+	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
+	bind(sListen, (SOCKADDR*)&my_adres, sizeof(my_adres));
+	//Прослушивания порта со стороны клиента: (1,2) 1- по какому сокету делать, 2- количество запросов которые будут в очереди
+	listen(sListen, SOMAXCONN);
+
+	//Сокет для удержания соединения с клиентом 
+
+	for(int i=0; i<500000000000000;i++){
+	newConnection = accept(sListen, (SOCKADDR*)&my_adres, &sizeofadres);
+	int count=0;
+	if (newConnection == 0) {
+		cout << "Error no connect for client" << endl;
+	}
+	else
+	{
+		cout << "Connect client well done " << endl;
+		Connection[count] = newConnection;
+		count++;
+
+			/*	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)recv_msg, NULL, NULL, NULL);
+				CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)send_msg, NULL, NULL, NULL);*/
+
+
+
+	}
+	}
+	return 0;
+}
+
