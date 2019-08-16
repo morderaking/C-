@@ -1,0 +1,63 @@
+#include "pch.h"
+#include <iostream>
+#pragma comment(lib, "WS2_32.lib")
+#include <winsock2.h> // стандартный виндовс сокет для подключения 
+#pragma warning(disable: 4996);
+
+using namespace std;
+SOCKET Connection;
+int keks;
+
+int main(int argc, char* argv[]) {
+
+	//WSAStartup
+	WSAData wsaData;
+	WORD DLLVersion = MAKEWORD(2, 1); // Версия библиотеки, которую мы подключаем в программе
+	//Цикл для проверки, загрузки данной библиотеки, если она не загрузится, выходит ошибка
+	if (WSAStartup(DLLVersion, &wsaData) != 0) {
+		std::cout << "Error no connect for library" << std::endl;
+		exit(1);
+
+	}
+
+
+
+	// SOCKADDR_IN преднозначена для хранения адреса (для интернет протоколов) 
+	SOCKADDR_IN my_adres;
+	int sizeofadres = sizeof(my_adres);
+	my_adres.sin_addr.s_addr = inet_addr("178.213.240.13");
+	my_adres.sin_port = htons(27015);
+	my_adres.sin_family = AF_INET; //(выбирается семейство протоколов, для интернета AF_INET )
+
+	//Сокет для соединения с сервером
+	SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(Connection, (SOCKADDR*)&my_adres, sizeof(my_adres)) != 0) {
+		std::cout << "Error, fail connect to server" << std::endl;
+		return 1;
+	}
+	std::cout << "Connect" << std::endl;
+	char msg[256]="0";
+	char msg1[256];
+	while (true) {
+		/*	keks = atoi(msg);
+		keks = keks -6;
+		itoa(keks, msg, 10);
+		send(Connection, msg, sizeof(msg), NULL);
+
+		double mymy=5.8;
+		send(Connection, (const char*)&mymy, sizeof(mymy), NULL);
+
+		Sleep(1000);
+		recv(Connection, msg1, sizeof(msg), NULL);
+		keks = atoi(msg1);
+		keks = keks -6;
+		itoa(keks, msg1, 10);
+		cout << (int8_t)msg1 << endl;
+		cout << keks << endl;
+		*/
+
+	}
+
+	system("pause");
+	return(0);
+}
