@@ -63,7 +63,7 @@ int main() {
 
 	//Сокет для удержания соединения с клиентом 
 
-	for(int i=0; i<500000000000000;i++){
+	while(true){
 	newConnection = accept(sListen, (SOCKADDR*)&my_adres, &sizeofadres);
 	int count=0;
 	if (newConnection == 0) {
